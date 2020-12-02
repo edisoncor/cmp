@@ -38,21 +38,18 @@ public class FrmMain extends javax.swing.JFrame {
     private void initComponents() {
 
         lblLabel = new javax.swing.JLabel();
-        txtInput = new javax.swing.JTextField();
         btnAction = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txtInput = new javax.swing.JTextArea();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtOutput = new javax.swing.JTextArea();
+        btnFile = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Ejemplo de LEXER");
 
         lblLabel.setText("Texto de entrada:");
-
-        txtInput.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtInputKeyTyped(evt);
-            }
-        });
 
         btnAction.setText("Analizar");
         btnAction.addActionListener(new java.awt.event.ActionListener() {
@@ -61,9 +58,22 @@ public class FrmMain extends javax.swing.JFrame {
             }
         });
 
+        txtInput.setColumns(20);
+        txtInput.setRows(5);
+        jScrollPane2.setViewportView(txtInput);
+
         txtOutput.setColumns(20);
         txtOutput.setRows(5);
         jScrollPane1.setViewportView(txtOutput);
+
+        jTabbedPane1.addTab("Lexico", jScrollPane1);
+
+        btnFile.setText("Cargar archivo");
+        btnFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFileActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -72,26 +82,34 @@ public class FrmMain extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblLabel)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtInput)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnAction)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblLabel)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(btnFile)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnAction))
+                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(lblLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblLabel)
-                    .addComponent(txtInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnAction))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE)
-                .addContainerGap())
+                    .addComponent(btnAction)
+                    .addComponent(btnFile))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
+                .addGap(26, 26, 26))
         );
 
         pack();
@@ -101,9 +119,9 @@ public class FrmMain extends javax.swing.JFrame {
         action();
     }//GEN-LAST:event_btnActionActionPerformed
 
-    private void txtInputKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtInputKeyTyped
-        action();
-    }//GEN-LAST:event_txtInputKeyTyped
+    private void btnFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFileActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnFileActionPerformed
 
     private void action() {
         // 1: Volcar el contenido de las entradas en un archivo temporal
@@ -145,8 +163,20 @@ public class FrmMain extends javax.swing.JFrame {
                     case Division:
                         output += "Division \n";
                         break;
-                    case Numero:
-                        output += "Número \n";
+                    case Decimal:
+                        output += "Decimal \n";
+                        break;
+                    case Binario:
+                        output += "Binario \n";
+                        break;
+                    case Octal:
+                        output += "Octal \n";
+                        break;
+                    case Hexadecimal:
+                        output += "Hexadecimal \n";
+                        break;
+                    case Fraccion:
+                        output += "Fraccion \n";
                         break;
                     case Asignacion:
                         output += "Asignación \n";
@@ -205,9 +235,12 @@ public class FrmMain extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAction;
+    private javax.swing.JButton btnFile;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel lblLabel;
-    private javax.swing.JTextField txtInput;
+    private javax.swing.JTextArea txtInput;
     private javax.swing.JTextArea txtOutput;
     // End of variables declaration//GEN-END:variables
 }
