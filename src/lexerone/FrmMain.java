@@ -21,11 +21,15 @@ import java.util.logging.Logger;
  */
 public class FrmMain extends javax.swing.JFrame {
 
+    
+    private TableModel tableModel;
+    
     /**
      * Creates new form FrmMain
      */
     public FrmMain() {
         initComponents();
+        tblLexico.setModel(new TableModel());
     }
 
     /**
@@ -42,8 +46,8 @@ public class FrmMain extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         txtInput = new javax.swing.JTextArea();
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtOutput = new javax.swing.JTextArea();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tblLexico = new javax.swing.JTable();
         btnFile = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -62,11 +66,9 @@ public class FrmMain extends javax.swing.JFrame {
         txtInput.setRows(5);
         jScrollPane2.setViewportView(txtInput);
 
-        txtOutput.setColumns(20);
-        txtOutput.setRows(5);
-        jScrollPane1.setViewportView(txtOutput);
+        jScrollPane3.setViewportView(tblLexico);
 
-        jTabbedPane1.addTab("Lexico", jScrollPane1);
+        jTabbedPane1.addTab("Lexico", jScrollPane3);
 
         btnFile.setText("Cargar archivo");
         btnFile.addActionListener(new java.awt.event.ActionListener() {
@@ -127,6 +129,7 @@ public class FrmMain extends javax.swing.JFrame {
         // 1: Volcar el contenido de las entradas en un archivo temporal
         File file = new File("file.txt");
         PrintWriter write;
+        tableModel = new TableModel();
         try {
             write = new PrintWriter(file);
             write.print(txtInput.getText());
@@ -139,57 +142,13 @@ public class FrmMain extends javax.swing.JFrame {
         try {
             Reader reader = new BufferedReader(new FileReader("file.txt"));
             Lexer lexer = new Lexer(reader);
-            String output = "";
             while (true) {
-                Tokens tokens = lexer.yylex();
-                if (tokens == null) {
-                    txtOutput.setText(output);
+                Row row = lexer.yylex();
+                if (row == null) {
+                    tblLexico.setModel(tableModel);
                     return;
                 }
-
-                switch (tokens) {
-                    case Identificador:
-                        output += "Identificador \n";
-                        break;
-                    case Suma:
-                        output += "Suma \n";
-                        break;
-                    case Resta:
-                        output += "Resta \n";
-                        break;
-                    case Multiplicacion:
-                        output += "Multiplicacion \n";
-                        break;
-                    case Division:
-                        output += "Division \n";
-                        break;
-                    case Decimal:
-                        output += "Decimal \n";
-                        break;
-                    case Binario:
-                        output += "Binario \n";
-                        break;
-                    case Octal:
-                        output += "Octal \n";
-                        break;
-                    case Hexadecimal:
-                        output += "Hexadecimal \n";
-                        break;
-                    case Fraccion:
-                        output += "Fraccion \n";
-                        break;
-                    case Asignacion:
-                        output += "Asignación \n";
-                        break;
-                    case Delimitador:
-                        output += "Delimitador \n";
-                        break;
-                    case Reservada:
-                        output += "Reservada \n";
-                        break;
-                    default:
-                        output += "Token: Error \n";
-                }
+                tableModel.addRowLexer(row);
             }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(FrmMain.class.getName()).log(Level.SEVERE, null, ex);
@@ -236,11 +195,11 @@ public class FrmMain extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAction;
     private javax.swing.JButton btnFile;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel lblLabel;
+    private javax.swing.JTable tblLexico;
     private javax.swing.JTextArea txtInput;
-    private javax.swing.JTextArea txtOutput;
     // End of variables declaration//GEN-END:variables
 }
