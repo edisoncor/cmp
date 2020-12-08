@@ -66,6 +66,8 @@ public class FrmMain extends javax.swing.JFrame {
         txtInput.setRows(5);
         jScrollPane2.setViewportView(txtInput);
 
+        tblLexico.setAutoCreateRowSorter(true);
+        tblLexico.setFillsViewportHeight(true);
         jScrollPane3.setViewportView(tblLexico);
 
         jTabbedPane1.addTab("Lexico", jScrollPane3);
