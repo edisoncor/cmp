@@ -21,11 +21,15 @@ import java.util.logging.Logger;
  */
 public class FrmMain extends javax.swing.JFrame {
 
+    
+    private TableModel tableModel;
+    
     /**
      * Creates new form FrmMain
      */
     public FrmMain() {
         initComponents();
+        tblLexico.setModel(new TableModel());
     }
 
     /**
@@ -38,21 +42,18 @@ public class FrmMain extends javax.swing.JFrame {
     private void initComponents() {
 
         lblLabel = new javax.swing.JLabel();
-        txtInput = new javax.swing.JTextField();
         btnAction = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtOutput = new javax.swing.JTextArea();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txtInput = new javax.swing.JTextArea();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tblLexico = new javax.swing.JTable();
+        btnFile = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Ejemplo de LEXER");
 
         lblLabel.setText("Texto de entrada:");
-
-        txtInput.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtInputKeyTyped(evt);
-            }
-        });
 
         btnAction.setText("Analizar");
         btnAction.addActionListener(new java.awt.event.ActionListener() {
@@ -61,9 +62,22 @@ public class FrmMain extends javax.swing.JFrame {
             }
         });
 
-        txtOutput.setColumns(20);
-        txtOutput.setRows(5);
-        jScrollPane1.setViewportView(txtOutput);
+        txtInput.setColumns(20);
+        txtInput.setRows(5);
+        jScrollPane2.setViewportView(txtInput);
+
+        tblLexico.setAutoCreateRowSorter(true);
+        tblLexico.setFillsViewportHeight(true);
+        jScrollPane3.setViewportView(tblLexico);
+
+        jTabbedPane1.addTab("Lexico", jScrollPane3);
+
+        btnFile.setText("Cargar archivo");
+        btnFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFileActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -72,26 +86,34 @@ public class FrmMain extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblLabel)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtInput)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnAction)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblLabel)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(btnFile)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnAction))
+                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(lblLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblLabel)
-                    .addComponent(txtInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnAction))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE)
-                .addContainerGap())
+                    .addComponent(btnAction)
+                    .addComponent(btnFile))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
+                .addGap(26, 26, 26))
         );
 
         pack();
@@ -101,14 +123,15 @@ public class FrmMain extends javax.swing.JFrame {
         action();
     }//GEN-LAST:event_btnActionActionPerformed
 
-    private void txtInputKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtInputKeyTyped
-        action();
-    }//GEN-LAST:event_txtInputKeyTyped
+    private void btnFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFileActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnFileActionPerformed
 
     private void action() {
         // 1: Volcar el contenido de las entradas en un archivo temporal
         File file = new File("file.txt");
         PrintWriter write;
+        tableModel = new TableModel();
         try {
             write = new PrintWriter(file);
             write.print(txtInput.getText());
@@ -121,45 +144,13 @@ public class FrmMain extends javax.swing.JFrame {
         try {
             Reader reader = new BufferedReader(new FileReader("file.txt"));
             Lexer lexer = new Lexer(reader);
-            String output = "";
             while (true) {
-                Tokens tokens = lexer.yylex();
-                if (tokens == null) {
-                    txtOutput.setText(output);
+                Row row = lexer.yylex();
+                if (row == null) {
+                    tblLexico.setModel(tableModel);
                     return;
                 }
-
-                switch (tokens) {
-                    case Identificador:
-                        output += "Identificador \n";
-                        break;
-                    case Suma:
-                        output += "Suma \n";
-                        break;
-                    case Resta:
-                        output += "Resta \n";
-                        break;
-                    case Multiplicacion:
-                        output += "Multiplicacion \n";
-                        break;
-                    case Division:
-                        output += "Division \n";
-                        break;
-                    case Numero:
-                        output += "Número \n";
-                        break;
-                    case Asignacion:
-                        output += "Asignación \n";
-                        break;
-                    case Delimitador:
-                        output += "Delimitador \n";
-                        break;
-                    case Reservada:
-                        output += "Reservada \n";
-                        break;
-                    default:
-                        output += "Token: Error \n";
-                }
+                tableModel.addRowLexer(row);
             }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(FrmMain.class.getName()).log(Level.SEVERE, null, ex);
@@ -205,9 +196,12 @@ public class FrmMain extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAction;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton btnFile;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel lblLabel;
-    private javax.swing.JTextField txtInput;
-    private javax.swing.JTextArea txtOutput;
+    private javax.swing.JTable tblLexico;
+    private javax.swing.JTextArea txtInput;
     // End of variables declaration//GEN-END:variables
 }
